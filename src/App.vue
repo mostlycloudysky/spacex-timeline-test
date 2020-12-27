@@ -1,32 +1,44 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view />
-  </div>
+  <v-app>
+    <v-app-bar app color="primary" dark>
+      <div class="d-flex align-center">
+        <h2>SpaceX Launcher test</h2>
+      </div>
+
+      <v-spacer></v-spacer>
+    </v-app-bar>
+
+    <v-content>
+      <v-container>
+        <v-timeline v-if="launches.length > 0">
+          <LaunchTimeLineItem
+            v-for="launch in launches"
+            :key="launch.flight_number"
+            :launch="launch"
+          />
+        </v-timeline>
+      </v-container>
+    </v-content>
+  </v-app>
 </template>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script>
+import axios from "axios";
+import LaunchTimeLineItem from "./components/LaunchTimeLineItem";
+export default {
+  name: "App",
 
-#nav {
-  padding: 30px;
+  components: {
+    LaunchTimeLineItem
+  },
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
+  data: () => ({
+    launches: []
+  }),
+  created() {
+    axios.get("https://api.spacexdata.com/v3/launches/past").then(response => {
+      this.launches = response.data;
+    });
   }
-}
-</style>
+};
+</script>
